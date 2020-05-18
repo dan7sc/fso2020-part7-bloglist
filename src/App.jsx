@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import { setNotification } from './reducers/notificationReducer'
 
 const App = () => {
+  const dispatch = useDispatch()
+  const notification = useSelector(state => state.notification)
+
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState([]) // [type: ['error', 'success'], message]
-  const [notificationVisible, setNotificationVisible] = useState(false)
   const [blogFormVisible, setBlogFormVisible] = useState(false)
 
   useEffect(() => {
@@ -55,8 +58,9 @@ const App = () => {
 
       setUser(user)
     } catch(e) {
-      setNotification(['error', 'wrong username or password'])
-      setNotificationVisible(true)
+      dispatch(setNotification(
+        ['error', 'wrong username or password']
+      ))
     }
 
     setUsername('')
@@ -80,11 +84,14 @@ const App = () => {
       blog.user = user
       setBlogs(blogs.concat(blog))
       setBlogFormVisible(false)
-      setNotification(['success', `a new blog ${blog.title} by ${blog.author} added`])
-      setNotificationVisible(true)
+
+      dispatch(setNotification(
+        ['success', `a new blog ${blog.title} by ${blog.author} added`]
+      ))
     } catch(e)  {
-      setNotification(['error', 'fail to add a new blog'])
-      setNotificationVisible(true)
+      dispatch(setNotification(
+        ['error', 'fail to add a new blog']
+      ))
     }
   }
 
@@ -129,22 +136,16 @@ const App = () => {
         } else return blog
       })
       setBlogs(newBlogs)
-      //setBlogFormVisible(false)
-      //setNotification(['success', `you like this blog ${blog.title} by ${blog.author}`])
-      //setNotificationVisible(true)
     } catch(e)  {
-      setNotification(['error', 'fail to add like'])
-      setNotificationVisible(true)
+      dispatch(setNotification(
+        ['error', 'fail to add like']
+      ))
     }
   }
 
   const showNotification = () => {
-    setTimeout(() => {
-      setNotificationVisible(false)
-      setNotification([])
-    }, 3000)
-
-    return <Notification type={notification[0]} message={notification[1]} />
+    const [messageType, message] = notification
+    return <Notification type={messageType} message={message} />
   }
 
   const blogForm = () => {
@@ -157,11 +158,13 @@ const App = () => {
   }
 
   const loginForm = () => {
+    const hasMessageToShow = notification[0] && notification[1]
+
     return (
       <div>
         <h2>log in to application</h2>
         {
-          notificationVisible ? showNotification() : ''
+          hasMessageToShow ? showNotification() : ''
         }
         <LoginForm
           username={username}
@@ -183,11 +186,12 @@ const App = () => {
   }
 
   const blogList = () => {
+    const hasMessageToShow = notification[0] && notification[1]
     return (
       <div>
         <h2>blogs</h2>
         {
-          notificationVisible ? showNotification() : ''
+          hasMessageToShow ? showNotification() : ''
         }
         <span>{user.name} logged in </span>
         <button onClick={handleLogout}>logout</button>
