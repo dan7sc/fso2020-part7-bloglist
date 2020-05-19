@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { Route, Switch } from 'react-router-dom'
+import UserList from './components/User'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
@@ -7,6 +9,7 @@ import Notification from './components/Notification'
 import { setNotification } from './reducers/notificationReducer'
 import { initializeBlogs, createBlog, deleteBlog, updateBlog } from './reducers/blogReducer'
 import { login, logout, setUser } from './reducers/loginReducer'
+import { initializeUsers } from './reducers/userReducer'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -14,6 +17,7 @@ const App = () => {
   const notification = useSelector(state => state.notification)
   const blogs = useSelector(state => state.blog)
   const user = useSelector(state => state.user)
+  const users = useSelector(state => state.users)
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -21,6 +25,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(initializeBlogs())
+    dispatch(initializeUsers())
   }, [dispatch])
 
   useEffect(() => {
@@ -141,41 +146,70 @@ const App = () => {
     setBlogFormVisible(!blogFormVisible)
   }
 
-  const blogList = () => {
+  const headerInfo = () => {
     const hasMessageToShow = notification[0] && notification[1]
+
     return (
       <div>
         <h2>blogs</h2>
-        {
-          hasMessageToShow ? showNotification() : ''
-        }
-        <span>{user.name} logged in </span>
+        {hasMessageToShow ? showNotification() : ''}
+        <p>{user.name} logged in </p>
         <button onClick={handleLogout}>logout</button>
         <br /><br />
+      </div>
+    )
+  }
+
+  const blogList = () => {
+    return (
+      <div>
+        {headerInfo()}
         {
           blogFormVisible
             ? blogForm()
             : toggleButton()
         }
-        {
-          blogs.map(
-            blog =>
-              <Blog
-                key={blog.id}
-                blog={blog}
-                user={user}
-                handleAddLike={() => addLike(blog)}
-                handleRemoveBlog={removeBlog}
-              />
-          )
-        }
+        {blogs.map(
+          blog =>
+            <Blog
+              key={blog.id}
+              blog={blog}
+              user={user}
+              handleAddLike={() => addLike(blog)}
+              handleRemoveBlog={removeBlog}
+            />
+        )}
+      </div>
+    )
+  }
+
+  const userList = () => {
+    return (
+      <div>
+        {headerInfo()}
+        <UserList users={users}/>
       </div>
     )
   }
 
   return (
     <div>
-      {user ? blogList() : loginForm()}
+      <Switch>
+        <Route exact path='/'>
+          {
+            user
+              ? blogList()
+              : loginForm()
+          }
+        </Route>
+        <Route path='/users'>
+          {
+            user
+              ? userList()
+              : loginForm()
+          }
+        </Route>
+      </Switch>
     </div>
   )
 }
