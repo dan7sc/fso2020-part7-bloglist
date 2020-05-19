@@ -28,26 +28,23 @@ export const login = (credentials) => {
 }
 
 export const setUser = () => {
-  return async dispatch => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-    if (loggedUserJSON) {
-      const loggedUser = JSON.parse(loggedUserJSON)
+  const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+  let loggedUser = null
 
-      dispatch({
-        type: 'SET_USER',
-        data: loggedUser
-      })
-    }
+  if (loggedUserJSON)
+    loggedUser = JSON.parse(loggedUserJSON)
+
+  return {
+    type: 'SET_USER',
+    data: loggedUser
   }
 }
 
 export const logout = () => {
-  return async dispatch => {
-    window.localStorage.removeItem('loggedBlogappUser')
+  window.localStorage.removeItem('loggedBlogappUser')
 
-    dispatch({
-      type: 'LOGOUT'
-    })
+  return {
+    type: 'LOGOUT'
   }
 }
 
