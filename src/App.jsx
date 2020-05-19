@@ -7,27 +7,21 @@ import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import { setNotification } from './reducers/notificationReducer'
+import { initializeBlogs, createBlog } from './reducers/blogReducer'
 
 const App = () => {
   const dispatch = useDispatch()
   const notification = useSelector(state => state.notification)
+  const blogs = useSelector(state => state.blog)
 
-  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [blogFormVisible, setBlogFormVisible] = useState(false)
 
   useEffect(() => {
-    const localGetAll = async () => {
-      const blogs = await blogService.getAll()
-      await blogs.sort((blogA, blogB) => {
-        return blogB.likes - blogA.likes
-      })
-      setBlogs(blogs)
-    }
-    localGetAll()
-  }, [])
+    dispatch(initializeBlogs())
+  }, [dispatch])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -80,13 +74,12 @@ const App = () => {
     await blogService.setToken(token)
 
     try {
-      const blog = await blogService.create(newObject)
-      blog.user = user
-      setBlogs(blogs.concat(blog))
+      await dispatch(createBlog(newObject))
+      await dispatch(initializeBlogs())
       setBlogFormVisible(false)
 
       dispatch(setNotification(
-        ['success', `a new blog ${blog.title} by ${blog.author} added`]
+        ['success', `a new blog ${newObject.title} by ${newObject.author} added`]
       ))
     } catch(e)  {
       dispatch(setNotification(
@@ -108,7 +101,7 @@ const App = () => {
           const newBlogs = blogs.filter(blogToFilter => {
             return blogToFilter.id !== blog.id
           })
-          setBlogs(newBlogs)
+          // setBlogs(newBlogs)
         }
       } else {
         window.confirm('Not authorized')
@@ -135,7 +128,7 @@ const App = () => {
           return blog
         } else return blog
       })
-      setBlogs(newBlogs)
+      // setBlogs(newBlogs)
     } catch(e)  {
       dispatch(setNotification(
         ['error', 'fail to add like']
