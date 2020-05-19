@@ -4,20 +4,19 @@ import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
-import blogService from './services/blogs'
 import { setNotification } from './reducers/notificationReducer'
-import { initializeBlogs, createBlog } from './reducers/blogReducer'
+import { initializeBlogs, createBlog, deleteBlog, updateBlog } from './reducers/blogReducer'
 import { login, logout, setUser } from './reducers/loginReducer'
 
 const App = () => {
   const dispatch = useDispatch()
+
   const notification = useSelector(state => state.notification)
   const blogs = useSelector(state => state.blog)
   const user = useSelector(state => state.user)
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-
   const [blogFormVisible, setBlogFormVisible] = useState(false)
 
   useEffect(() => {
@@ -58,15 +57,10 @@ const App = () => {
   }
 
   const addBlog = async (newObject) => {
-    const { token } = JSON.parse(
-      window.localStorage.getItem('loggedBlogappUser')
-    )
-    await blogService.setToken(token)
-
     try {
       await dispatch(createBlog(newObject))
-      await dispatch(initializeBlogs())
       setBlogFormVisible(false)
+      dispatch(initializeBlogs())
 
       dispatch(setNotification(
         ['success', `a new blog ${newObject.title} by ${newObject.author} added`]
@@ -79,19 +73,10 @@ const App = () => {
   }
 
   const removeBlog = async (blog) => {
-    const { token } = JSON.parse(
-      window.localStorage.getItem('loggedBlogappUser')
-    )
-    await blogService.setToken(token)
-
     try {
       if (blog.user.username === user.username) {
         if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-          await blogService.deleteOne(blog.id)
-          const newBlogs = blogs.filter(blogToFilter => {
-            return blogToFilter.id !== blog.id
-          })
-          // setBlogs(newBlogs)
+          dispatch(deleteBlog(blog.id))
         }
       } else {
         window.confirm('Not authorized')
@@ -102,23 +87,11 @@ const App = () => {
   }
 
   const addLike = async (oldObject) => {
-    const { token } = JSON.parse(
-      window.localStorage.getItem('loggedBlogappUser')
-    )
-    await blogService.setToken(token)
-
     const newObject = { ...oldObject }
     newObject.likes += 1
 
     try {
-      const updatedBlog = await blogService.update(newObject.id, newObject)
-      const newBlogs = blogs.map(blog => {
-        if (blog.url === updatedBlog.url) {
-          blog.likes += 1
-          return blog
-        } else return blog
-      })
-      // setBlogs(newBlogs)
+      dispatch(updateBlog(newObject.id, newObject))
     } catch(e)  {
       dispatch(setNotification(
         ['error', 'fail to add like']
