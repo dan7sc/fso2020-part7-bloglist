@@ -7,6 +7,7 @@ import Blog from './components/Blog'
 import BlogList from './components/BlogList'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
+import Menu from './components/Menu'
 import Notification from './components/Notification'
 import { setNotification } from './reducers/notificationReducer'
 import { initializeBlogs, createBlog, deleteBlog, updateBlog } from './reducers/blogReducer'
@@ -154,11 +155,9 @@ const App = () => {
     if (!user) return null
     return (
       <div>
-        <h2>blogs</h2>
+        <h2>blog app</h2>
         {hasMessageToShow ? showNotification() : ''}
-        <p>{user.name} logged in </p>
-        <button onClick={handleLogout}>logout</button>
-        <br /><br />
+        <br />
       </div>
     )
   }
@@ -227,6 +226,10 @@ const App = () => {
 
   return (
     <div>
+      <Menu
+        user={user}
+        handleLogout={() => handleLogout()}
+      />
       <Switch>
         <Route path='/blogs/:id'>
           {
