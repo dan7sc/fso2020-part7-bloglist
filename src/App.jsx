@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Route, Switch, useRouteMatch } from 'react-router-dom'
+import { Route, Switch, useRouteMatch, Redirect } from 'react-router-dom'
 import UserList from './components/UserList'
 import User from './components/User'
 import Blog from './components/Blog'
+import BlogList from './components/BlogList'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
@@ -173,12 +174,9 @@ const App = () => {
         }
         {blogs.map(
           blog =>
-            <Blog
+            <BlogList
               key={blog.id}
               blog={blog}
-              user={user}
-              handleAddLike={() => addLike(blog)}
-              handleRemoveBlog={removeBlog}
             />
         )}
       </div>
@@ -203,14 +201,42 @@ const App = () => {
     )
   }
 
-  const match = useRouteMatch('/users/:id')
-  const matchedUser = match
-    ? users.find(user => user.id === match.params.id)
+  const blogDetails = (blog) => {
+    return (
+      <div>
+        {headerInfo()}
+        <Blog
+          user={user}
+          blog={blog}
+          handleAddLike={() => addLike(blog)}
+          handleRemoveBlog={removeBlog}
+        />
+      </div>
+    )
+  }
+
+  const userId = useRouteMatch('/users/:id')
+  const matchedUser = userId
+    ? users.find(user => user.id === userId.params.id)
+    : null
+
+  const blogId = useRouteMatch('/blogs/:id')
+  const matchedBlog = blogId
+    ? blogs.find(blog => blog.id === blogId.params.id)
     : null
 
   return (
     <div>
       <Switch>
+        <Route path='/blogs/:id'>
+          {
+            user
+              ? (matchedBlog
+                ? blogDetails(matchedBlog)
+                : <Redirect to='/'/>)
+              : loginForm()
+          }
+        </Route>
         <Route path='/users/:id'>
           {
             user && matchedUser
