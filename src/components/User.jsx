@@ -1,36 +1,22 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const UserList = ({ users }) => {
+const User = ({ user }) => {
   return (
     <div>
-      <h2>Users</h2>
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th>blogs created</th>
-            </tr>
-          </thead>
-          <thead>
-          </thead>
-          {users.map(user => (
-            <tbody key={user.name}>
-              <tr>
-                <td>{user.name}</td>
-                <td>{user.blogs.length}</td>
-              </tr>
-            </tbody>
-          ))}
-        </table>
-      </div>
+      <h1>{user.name}</h1>
+      <h2>added blogs</h2>
+      <ul>
+        {user.blogs.map(blog => (
+          <li key={blog.id}>{blog.title}</li>
+        ))}
+      </ul>
     </div>
   )
 }
 
-UserList.propTypes = {
-  users: PropTypes.array.isRequired,
+User.propTypes = {
+  user: PropTypes.object.isRequired,
 }
 
-export default UserList
+export default User

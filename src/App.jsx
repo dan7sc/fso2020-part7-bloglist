@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Route, Switch } from 'react-router-dom'
-import UserList from './components/User'
+import { Route, Switch, useRouteMatch } from 'react-router-dom'
+import UserList from './components/UserList'
+import User from './components/User'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
@@ -149,6 +150,7 @@ const App = () => {
   const headerInfo = () => {
     const hasMessageToShow = notification[0] && notification[1]
 
+    if (!user) return null
     return (
       <div>
         <h2>blogs</h2>
@@ -187,18 +189,32 @@ const App = () => {
     return (
       <div>
         {headerInfo()}
-        <UserList users={users}/>
+        <UserList users={users} />
       </div>
     )
   }
 
+  const userDetails = (user) => {
+    return (
+      <div>
+        {headerInfo()}
+        <User user={user} />
+      </div>
+    )
+  }
+
+  const match = useRouteMatch('/users/:id')
+  const matchedUser = match
+    ? users.find(user => user.id === match.params.id)
+    : null
+
   return (
     <div>
       <Switch>
-        <Route exact path='/'>
+        <Route path='/users/:id'>
           {
-            user
-              ? blogList()
+            user && matchedUser
+              ? userDetails(matchedUser)
               : loginForm()
           }
         </Route>
@@ -206,6 +222,13 @@ const App = () => {
           {
             user
               ? userList()
+              : loginForm()
+          }
+        </Route>
+        <Route path='/'>
+          {
+            user
+              ? blogList()
               : loginForm()
           }
         </Route>
