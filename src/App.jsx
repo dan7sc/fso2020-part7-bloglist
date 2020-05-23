@@ -4,6 +4,8 @@ import { Route, Switch, useRouteMatch, Redirect } from 'react-router-dom'
 import UserList from './components/UserList'
 import User from './components/User'
 import Blog from './components/Blog'
+import CommentList from './components/CommentList'
+import CommentForm from './components/CommentForm'
 import BlogList from './components/BlogList'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
@@ -11,6 +13,7 @@ import Menu from './components/Menu'
 import Notification from './components/Notification'
 import { setNotification } from './reducers/notificationReducer'
 import { initializeBlogs, createBlog, deleteBlog, updateBlog } from './reducers/blogReducer'
+import { initializeComments, createComment } from './reducers/commentReducer'
 import { login, logout, setUser } from './reducers/loginReducer'
 import { initializeUsers } from './reducers/userReducer'
 
@@ -19,6 +22,7 @@ const App = () => {
 
   const notification = useSelector(state => state.notification)
   const blogs = useSelector(state => state.blog)
+  const comments = useSelector(state => state.comments)
   const user = useSelector(state => state.user)
   const users = useSelector(state => state.users)
 
@@ -30,6 +34,12 @@ const App = () => {
     dispatch(initializeBlogs())
     dispatch(initializeUsers())
   }, [dispatch])
+
+  useEffect(() => {
+    if (blogs.length > 0) {
+      dispatch(initializeComments(blogs))
+    }
+  }, [dispatch, blogs])
 
   useEffect(() => {
     dispatch(setUser())
@@ -106,6 +116,18 @@ const App = () => {
       ))
     }
   }
+
+  const addComment = async (id, content) => {
+    try {
+      await dispatch(createComment(id, content))
+      dispatch(initializeBlogs())
+    } catch(e)  {
+      dispatch(setNotification(
+        ['error', 'fail to add a new comment']
+      ))
+    }
+  }
+
 
   const showNotification = () => {
     const [messageType, message] = notification
@@ -201,6 +223,10 @@ const App = () => {
   }
 
   const blogDetails = (blog) => {
+    const blogComments = comments.find(item => (
+      item.blog === blog.id
+    ))
+
     return (
       <div>
         {headerInfo()}
@@ -209,6 +235,14 @@ const App = () => {
           blog={blog}
           handleAddLike={() => addLike(blog)}
           handleRemoveBlog={removeBlog}
+        />
+        <h2>Comments</h2>
+        <CommentForm
+          id={blog.id}
+          createComment={addComment}
+        />
+        <CommentList
+          comments={blogComments}
         />
       </div>
     )
