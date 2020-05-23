@@ -1,4 +1,4 @@
-import commentService from '../services/comments'
+import commentService from '../services/blogs'
 
 const commentReducer = (state = [], action) => {
   switch(action.type) {

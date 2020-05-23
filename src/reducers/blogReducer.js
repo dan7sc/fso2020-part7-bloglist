@@ -18,6 +18,9 @@ const blogReducer = (state = [], action) => {
       blogToFilter =>
         blogToFilter.id !== action.data.id
     )
+  case 'NEW_COMMENT':{
+    return [...state, action.data]
+  }
   default:
     return state
   }
@@ -81,6 +84,17 @@ export const updateBlog = (id, newObject) => {
     dispatch({
       type: 'UPDATE_BLOG',
       data: updatedBlog
+    })
+  }
+}
+
+export const createComment = (id, content) => {
+  return async dispatch => {
+    const blogWithNewComment = await blogService.createComment(id, content)
+
+    dispatch({
+      type: 'NEW_COMMENT',
+      data: blogWithNewComment
     })
   }
 }
