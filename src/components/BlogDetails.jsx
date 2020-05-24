@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { deleteBlog, updateBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
 
-const Blog = ({ blog, user }) => {
+const BlogDetails = ({ blog, user }) => {
   const dispatch = useDispatch()
 
   const buttonRemoveStyle = {
@@ -81,9 +81,9 @@ const Blog = ({ blog, user }) => {
   )
 }
 
-Blog.propTypes = {
+BlogDetails.propTypes = {
   blog: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired,
 }
 
-export default Blog
+export default BlogDetails

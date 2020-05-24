@@ -3,6 +3,10 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
 const UserList = ({ users }) => {
+  if (!users) {
+    return null
+  }
+
   return (
     <div>
       <h2>Users</h2>

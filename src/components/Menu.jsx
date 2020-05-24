@@ -1,14 +1,26 @@
 import React from 'react'
+import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { logout } from '../reducers/loginReducer'
 
-const Menu = ({ user, handleLogout }) => {
+const Menu = ({ user }) => {
+  const dispatch = useDispatch()
+
   const padding = { padding: 5 }
   const navbar = {
     background: '#dddddd',
     padding: 8
   }
 
-  if (!user) return null
+  const handleLogout = () => {
+    dispatch(
+      logout()
+    )
+  }
+
+  if (!user) {
+    return null
+  }
 
   return (
     <div style={navbar}>
