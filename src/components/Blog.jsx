@@ -1,26 +1,68 @@
 import React from 'react'
+import { useDispatch } from 'react-redux'
 import PropTypes from 'prop-types'
+import { deleteBlog, updateBlog } from '../reducers/blogReducer'
+import { setNotification } from '../reducers/notificationReducer'
 
-const Blog = ({
-  blog,
-  user,
-  handleAddLike,
-  handleRemoveBlog
-}) => {
+const Blog = ({ blog, user }) => {
+  const dispatch = useDispatch()
+
   const buttonRemoveStyle = {
     background: 'lightBlue',
     border: '1px solid lightBlue'
   }
 
+  const removeBlog = async () => {
+    let message = ''
+
+    try {
+      if (blog.user.username === user.username) {
+        message = `Remove blog ${blog.title} by ${blog.author}`
+        if (window.confirm(message)) {
+          dispatch(
+            deleteBlog(blog.id)
+          )
+        }
+      } else {
+        message = 'Not authorized'
+        window.confirm(message)
+      }
+    } catch(e) {
+      message = 'Fail to delete blog'
+      window.confirm(message)
+    }
+  }
+
+  const addLike = async () => {
+    const newObject = { ...blog }
+    newObject.likes += 1
+
+    try {
+      dispatch(
+        updateBlog(newObject.id, newObject)
+      )
+    } catch(e)  {
+      dispatch(
+        setNotification(
+          ['error', 'fail to add like']
+        )
+      )
+    }
+  }
+
   const showRemoveButton = () => {
-    return (
-      <button
-        id='delete-blog-button'
-        style={buttonRemoveStyle}
-        onClick={() => handleRemoveBlog(blog)}>
-        remove
-      </button>
-    )
+    if (blog.user.username === user.username) {
+      return (
+        <button
+          id='delete-blog-button'
+          style={buttonRemoveStyle}
+          onClick={removeBlog}>
+          remove
+        </button>
+      )
+    }
+
+    return null
   }
 
   return (
@@ -30,14 +72,10 @@ const Blog = ({
         <a href={blog.url}>{blog.url}</a>
         <div>
           <span>{blog.likes} likes</span>
-          <button className='like-button' onClick={handleAddLike}>like</button>
+          <button className='like-button' onClick={addLike}>like</button>
         </div>
-        <div>added by {blog.user ? blog.user.name : 'unknown'}</div>
-        {
-          blog.user && blog.user.username === user.username
-            ? showRemoveButton()
-            : <div></div>
-        }
+        <div>added by {blog.user.name}</div>
+        {showRemoveButton()}
       </div>
     </div>
   )
@@ -46,8 +84,6 @@ const Blog = ({
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired,
-  handleAddLike: PropTypes.func.isRequired,
-  handleRemoveBlog: PropTypes.func.isRequired
 }
 
 export default Blog

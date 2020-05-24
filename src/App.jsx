@@ -12,7 +12,7 @@ import LoginForm from './components/LoginForm'
 import Menu from './components/Menu'
 import Notification from './components/Notification'
 import { setNotification } from './reducers/notificationReducer'
-import { initializeBlogs, createBlog, deleteBlog, updateBlog, createComment } from './reducers/blogReducer'
+import { initializeBlogs, createBlog, createComment } from './reducers/blogReducer'
 import { logout, setUser } from './reducers/loginReducer'
 import { initializeUsers } from './reducers/userReducer'
 
@@ -49,33 +49,6 @@ const App = () => {
     } catch(e)  {
       dispatch(setNotification(
         ['error', 'fail to add a new blog']
-      ))
-    }
-  }
-
-  const removeBlog = async (blog) => {
-    try {
-      if (blog.user.username === loggedUser.username) {
-        if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-          dispatch(deleteBlog(blog.id))
-        }
-      } else {
-        window.confirm('Not authorized')
-      }
-    } catch(e) {
-      window.confirm('Fail to delete blog')
-    }
-  }
-
-  const addLike = async (oldObject) => {
-    const newObject = { ...oldObject }
-    newObject.likes += 1
-
-    try {
-      dispatch(updateBlog(newObject.id, newObject))
-    } catch(e)  {
-      dispatch(setNotification(
-        ['error', 'fail to add like']
       ))
     }
   }
@@ -185,8 +158,6 @@ const App = () => {
         <Blog
           user={loggedUser}
           blog={blog}
-          handleAddLike={() => addLike(blog)}
-          handleRemoveBlog={removeBlog}
         />
         <h2>Comments</h2>
         <CommentForm
