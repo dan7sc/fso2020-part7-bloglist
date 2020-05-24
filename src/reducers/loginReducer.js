@@ -16,6 +16,7 @@ const loginReducer = (state = null, action) => {
 export const login = (credentials) => {
   return async dispatch => {
     const user = await loginService.login(credentials)
+
     window.localStorage.setItem(
       'loggedBlogappUser', JSON.stringify(user)
     )
@@ -31,9 +32,9 @@ export const setUser = () => {
   const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
   let loggedUser = null
 
-  if (loggedUserJSON)
+  if (loggedUserJSON) {
     loggedUser = JSON.parse(loggedUserJSON)
-
+  }
   return {
     type: 'SET_USER',
     data: loggedUser

@@ -13,53 +13,24 @@ import Menu from './components/Menu'
 import Notification from './components/Notification'
 import { setNotification } from './reducers/notificationReducer'
 import { initializeBlogs, createBlog, deleteBlog, updateBlog, createComment } from './reducers/blogReducer'
-import { login, logout, setUser } from './reducers/loginReducer'
+import { logout, setUser } from './reducers/loginReducer'
 import { initializeUsers } from './reducers/userReducer'
 
 const App = () => {
   const dispatch = useDispatch()
 
   const notification = useSelector(state => state.notification)
-  const blogs = useSelector(state => state.blog)
-  const user = useSelector(state => state.user)
+  const blogs = useSelector(state => state.blogs)
+  const loggedUser = useSelector(state => state.loggedUser)
   const users = useSelector(state => state.users)
 
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [blogFormVisible, setBlogFormVisible] = useState(false)
 
   useEffect(() => {
     dispatch(initializeBlogs())
     dispatch(initializeUsers())
-  }, [dispatch])
-
-  useEffect(() => {
     dispatch(setUser())
   }, [dispatch])
-
-  const handleUsernameInput = (event) => {
-    setUsername(event.target.value)
-  }
-
-  const handlePasswordInput = (event) => {
-    setPassword(event.target.value)
-  }
-
-  const handleLogin = async (event) => {
-    event.preventDefault()
-
-    try {
-      const credentials = { username, password }
-      await dispatch(login(credentials))
-    } catch(e) {
-      dispatch(setNotification(
-        ['error', 'wrong username or password']
-      ))
-    }
-
-    setUsername('')
-    setPassword('')
-  }
 
   const handleLogout = () => {
     dispatch(logout())
@@ -84,7 +55,7 @@ const App = () => {
 
   const removeBlog = async (blog) => {
     try {
-      if (blog.user.username === user.username) {
+      if (blog.user.username === loggedUser.username) {
         if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
           dispatch(deleteBlog(blog.id))
         }
@@ -120,7 +91,6 @@ const App = () => {
     }
   }
 
-
   const showNotification = () => {
     const [messageType, message] = notification
     return <Notification type={messageType} message={message} />
@@ -144,13 +114,7 @@ const App = () => {
         {
           hasMessageToShow ? showNotification() : ''
         }
-        <LoginForm
-          username={username}
-          password={password}
-          handleUsernameInput={handleUsernameInput}
-          handlePasswordInput={handlePasswordInput}
-          handleSubmit={handleLogin}
-        />
+        <LoginForm />
       </div>
     )
   }
@@ -166,7 +130,7 @@ const App = () => {
   const headerInfo = () => {
     const hasMessageToShow = notification[0] && notification[1]
 
-    if (!user) return null
+    if (!loggedUser) return null
     return (
       <div>
         <h2>blog app</h2>
@@ -219,7 +183,7 @@ const App = () => {
       <div>
         {headerInfo()}
         <Blog
-          user={user}
+          user={loggedUser}
           blog={blog}
           handleAddLike={() => addLike(blog)}
           handleRemoveBlog={removeBlog}
@@ -249,13 +213,13 @@ const App = () => {
   return (
     <div>
       <Menu
-        user={user}
+        user={loggedUser}
         handleLogout={() => handleLogout()}
       />
       <Switch>
         <Route path='/blogs/:id'>
           {
-            user
+            loggedUser
               ? (matchedBlog
                 ? blogDetails(matchedBlog)
                 : <Redirect to='/'/>)
@@ -264,21 +228,21 @@ const App = () => {
         </Route>
         <Route path='/users/:id'>
           {
-            user && matchedUser
+            loggedUser && matchedUser
               ? userDetails(matchedUser)
               : loginForm()
           }
         </Route>
         <Route path='/users'>
           {
-            user
+            loggedUser
               ? userList()
               : loginForm()
           }
         </Route>
         <Route path='/'>
           {
-            user
+            loggedUser
               ? blogList()
               : loginForm()
           }
