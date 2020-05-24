@@ -1,18 +1,40 @@
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import PropTypes from 'prop-types'
+import { setNotification } from '../reducers/notificationReducer'
+import { initializeBlogs, createComment } from '../reducers/blogReducer'
 
-const CommentForm = ({ id, createComment }) => {
+const CommentForm = ({ blog }) => {
+  const dispatch = useDispatch()
   const [content, setContent] = useState('')
 
   const handleInput = (event, setFunction) => {
     setFunction(event.target.value)
   }
 
-  const addComment = (event) => {
+  const addComment = async (event) => {
     event.preventDefault()
 
-    createComment(id, content)
-    setContent('')
+    try {
+      dispatch(
+        createComment(blog.id, content)
+      )
+      setContent('')
+      dispatch(
+        initializeBlogs()
+      )
+    } catch(e)  {
+      dispatch(
+        setNotification([
+          'error',
+          'fail to add a new comment'
+        ])
+      )
+    }
+  }
+
+  if (!blog) {
+    return null
   }
 
   return (
@@ -36,8 +58,7 @@ const CommentForm = ({ id, createComment }) => {
 }
 
 CommentForm.propTypes = {
-  id: PropTypes.string.isRequired,
-  createComment: PropTypes.func.isRequired
+  blog: PropTypes.object.isRequired,
 }
 
 export default CommentForm
