@@ -43,9 +43,10 @@ const BlogDetails = ({ blog, user }) => {
       )
     } catch(e)  {
       dispatch(
-        setNotification(
-          ['error', 'fail to add like']
-        )
+        setNotification([
+          'error',
+          'fail to add like'
+        ])
       )
     }
   }
@@ -67,12 +68,16 @@ const BlogDetails = ({ blog, user }) => {
 
   return (
     <div>
-      <div className='displayed-items' >
+      <div className='displayed-items'>
         <h1>{blog.title} {blog.author}</h1>
         <a href={blog.url}>{blog.url}</a>
         <div>
           <span>{blog.likes} likes</span>
-          <button className='like-button' onClick={addLike}>like</button>
+          <button
+            className='like-button'
+            onClick={addLike}>
+            like
+          </button>
         </div>
         <div>added by {blog.user.name}</div>
         {showRemoveButton()}
