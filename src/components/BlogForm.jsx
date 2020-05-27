@@ -92,10 +92,18 @@ const BlogForm = () => {
             />
           </div>
           <div>
-            <button id='create-button' type='submit'>create</button>
+            <button
+              id='create-button'
+              type='submit'>
+              create
+            </button>
           </div>
           <div>
-            <button type='cancel' onClick={toggleVisibility}>cancel</button>
+            <button
+              type='cancel'
+              onClick={toggleVisibility}>
+              cancel
+            </button>
           </div>
         </form>
       </div>
