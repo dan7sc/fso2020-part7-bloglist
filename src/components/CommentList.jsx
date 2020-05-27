@@ -5,7 +5,7 @@ const CommentList = ({ comments }) => {
   if (comments.length === 0) {
     return (
       <div>
-        <p>No comments for this blog</p>
+        <p>No comments</p>
       </div>
     )
   }

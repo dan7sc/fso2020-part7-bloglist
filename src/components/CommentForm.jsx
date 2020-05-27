@@ -50,7 +50,11 @@ const CommentForm = ({ blog }) => {
           />
         </span>
         <span>
-          <button id='create-button' type='submit'>add comment</button>
+          <button
+            id='create-button'
+            type='submit'>
+            add comment
+          </button>
         </span>
       </form>
     </div>
