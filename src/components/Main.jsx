@@ -11,8 +11,6 @@ import BlogInfo from './BlogInfo'
 import LoginForm from './LoginForm'
 import Notification from './Notification'
 
-
-// @import url('https://fonts.googleapis.com/css?family=Roboto');
 const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
@@ -25,10 +23,6 @@ const GlobalStyle = createGlobalStyle`
 `
 
 const Container = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
   position: relative;
   margin: 0 auto;
   width: 768px;
@@ -37,6 +31,13 @@ const Container = styled.div`
   min-height: 480px;
   background-color: palevioletred;
   overflow: hidden;
+`
+
+const LoginContainer = styled(Container)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 `
 
 const Main = ({
@@ -59,14 +60,14 @@ const Main = ({
 
   if (!loggedUser) {
     return (
-      <Container>
+      <LoginContainer>
         <GlobalStyle/>
         <Notification
           type={messageType}
           message={message}
         />
         <LoginForm />
-      </Container>
+      </LoginContainer>
     )
   }
 
