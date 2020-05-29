@@ -24,11 +24,13 @@ const GlobalStyle = createGlobalStyle`
 
 const Container = styled.div`
   position: relative;
+  padding: 0;
   margin: 0 auto;
   width: 768px;
   max-width: 100%;
-  height: 100vh;
-  min-height: 480px;
+  height: 100%;
+  min-height: 100vh;
+  max-height: 100%;
   background-color: palevioletred;
   overflow: hidden;
 `
@@ -38,6 +40,20 @@ const LoginContainer = styled(Container)`
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  height: 100vh;
+  min-height: 480px;
+`
+
+const Title = styled.h1`
+  text-align: center;
+  font-size: 44px;
+  font-family: cursive;
+  background-color: #D9C787;
+  color: #2E2217;
+  heigth: 110vh;
+  position: relative;
+  margin: 0;
+  padding: 1.8em 0;
 `
 
 const Main = ({
@@ -75,7 +91,7 @@ const Main = ({
     <Container>
       <GlobalStyle/>
       <Menu user={loggedUser} />
-      <h2>blog app</h2>
+      <Title>Blog App</Title>
       <Notification
         type={messageType}
         message={message}
